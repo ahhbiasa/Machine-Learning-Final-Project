@@ -32,18 +32,12 @@ test = pd.read_csv("../input/sign-language-mnist/sign_mnist_test/sign_mnist_test
 train.head()
 print(sorted(train.label.unique()))
 
-train_sample = train.loc[:499,:]
-train_sample.shape
+from sklearn.model_selection import train_test_split
 
-train_sample.head
-
-valid_sample = train.iloc[-200:,:]
-valid_sample.shape
-test_sample = test.loc[:199,:]
-test_sample.shape
+train_sample, valid_sample = train_test_split(train, test_size=0.5, random_state=42)
 
 train_sample.to_csv("train_sample.csv",index=False)
-test_sample.to_csv("test_sample.csv",index=False)
+test.to_csv("test_sample.csv",index=False)
 valid_sample.to_csv("valid_sample.csv",index=False)
 
 !python ../input/how-to-convert-csv-to-images/make_imgs.py --label label ./test_sample.csv ./mnist-imgs/sample/test/ 
@@ -56,7 +50,7 @@ valid_path = "./mnist-imgs/sample/valid"
 
 
 train_data = ImageDataGenerator(preprocessing_function=tf.keras.applications.mobilenet.preprocess_input).flow_from_directory(
-    directory=train_path, target_size=(224,224), batch_size=10)
+    directory=train_path, target_size=(224,224), batch_size=10, shuffle=True)
 
 valid_data = ImageDataGenerator(preprocessing_function=tf.keras.applications.mobilenet.preprocess_input).flow_from_directory(
     directory=valid_path, target_size=(224,224), batch_size=10)
@@ -213,7 +207,7 @@ from PIL import Image
 
 classes = ["Class " + str(i) for i in range(25) if i != 9]
 print(classification_report(y_true, y_pred, target_names=classes))
-test_indices = [0, 12, 25, 30]
+test_indices = [0, 12, 340, 1000]
 
 plt.figure(figsize=(15, 7))
 
